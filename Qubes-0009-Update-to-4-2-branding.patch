@@ -1,0 +1,22 @@
+From c78d51772d9a7814a0d71a3d69fbd140766e6a46 Mon Sep 17 00:00:00 2001
+From: unman <unman@thirdeyesecurity.org>
+Date: Thu, 21 Oct 2021 17:51:42 +0000
+Subject: [PATCH] Update to 4.2 branding
+
+---
+ driver/dialog.c | 2 +-
+ 1 file changed, 1 insertions(+), 1 deletions(-)
+
+diff --git a/driver/dialog.c b/driver/dialog.c
+index e5834b6..666fb5f 100644
+--- a/driver/dialog.c
++++ b/driver/dialog.c
+@@ -1047,7 +1047,7 @@ window_init (Widget root_widget, int splash_p)
+     *s = 0;
+     ws->heading_label = (char *) malloc (100);
+     ws->version = strdup(version);
+-    sprintf (ws->heading_label, "Qubes OS 4.1");
++    sprintf (ws->heading_label, "Qubes OS 4.2");
+ 
+     if (splash_p)
+       {

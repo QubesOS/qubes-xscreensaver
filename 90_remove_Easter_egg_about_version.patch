@@ -3,10 +3,10 @@
 #
 Index: xscreensaver-git/driver/prefs.c
 ===================================================================
---- xscreensaver-git.orig/driver/prefs.c
-+++ xscreensaver-git/driver/prefs.c
+--- xscreensaver-git.orig/driver/prefsw.c
++++ xscreensaver-git/driver/prefsw.c
 @@ -1743,6 +1743,8 @@ senesculent_p (void)
-      everyone involved, most especially the users.
+      of date.
    */
  
 +  return 0;
@@ -14,3 +14,16 @@ Index: xscreensaver-git/driver/prefs.c
    time_t now = time ((time_t *) 0);				/*   d   */
    struct tm *tm = localtime (&now);				/*   o   */
    const char *s = screensaver_id;				/*   n   */
+diff --git a/driver/dialog.c b/driver/dialog.c
+index 9a8173f..274f775 100644
+--- a/driver/dialog.c
++++ b/driver/dialog.c
+@@ -1283,7 +1283,7 @@ window_draw (window_state *ws)
+   lines[i].align = CENTER;
+   i++;
+ 
+-  if (time ((time_t *) 0) - XSCREENSAVER_RELEASED > 60*60*24*30*17)
++  if (0 && time ((time_t *) 0) - XSCREENSAVER_RELEASED > 60*60*24*30*17)
+     {
+       lines[i].text  = _("Update available!\nThis version is very old.\n");
+       lines[i].font  = ws->error_font;

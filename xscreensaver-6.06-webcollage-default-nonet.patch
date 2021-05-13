@@ -1,29 +1,28 @@
-From b04424419b281e608bac2a600bf7aab0c65b164a Mon Sep 17 00:00:00 2001
+From 585252a63804d1cea0271fe29ef33476d1127a4f Mon Sep 17 00:00:00 2001
 From: XScreenSaver owners <xscreensaver-owner@fedoraproject.org>
-Date: Tue, 24 Mar 2020 13:29:14 +0900
+Date: Sat, 22 Oct 2022 23:48:23 +0900
 Subject: [PATCH] # Change webcollage not to access to net # Also see bug
  472061
 
 ---
- hacks/config/webcollage.xml | 7 ++++++-
+ hacks/config/webcollage.xml | 7 +++++++
  hacks/webcollage.man        | 5 +++++
- 2 files changed, 11 insertions(+), 1 deletion(-)
+ 2 files changed, 12 insertions(+)
 
 diff --git a/hacks/config/webcollage.xml b/hacks/config/webcollage.xml
-index c26ea98..da312fa 100644
+index a2acab7..1db7aa5 100644
 --- a/hacks/config/webcollage.xml
 +++ b/hacks/config/webcollage.xml
-@@ -30,8 +30,8 @@
-   <string id="filter"  _label="Per-image filter program" arg="-filter %"/>
-   <string id="filter2" _label="Overall filter program" arg="-filter2 %"/>
-   <file id="dictionary" _label="Dictionary file" arg="-dictionary %"/>
--  <file id="dir" _label="Image directory" arg="-directory %"/>
-  -->
-+  <file id="dir" _label="Image directory" arg="-directory %"/>
+@@ -26,6 +26,8 @@
+    </vgroup>
+   </hgroup>
  
++  <file id="dir" _label="Image directory" arg="-directory %"/>
++
    <xscreensaver-updater />
  
-@@ -51,6 +51,11 @@ Please act accordingly.
+   <_description>
+@@ -44,6 +46,11 @@ Please act accordingly.
  
  See also https://www.jwz.org/webcollage/
  
@@ -32,25 +31,25 @@ index c26ea98..da312fa 100644
 +and uses image files on your local disk. If you want webcollage to
 +search for image files on net, use webcollage.original .
 +
- Written by Jamie Zawinski; 1999.
+ Written by Jamie Zawinski; 1998.
    </_description>
  </screensaver>
 diff --git a/hacks/webcollage.man b/hacks/webcollage.man
-index 82bf5d7..7860d2e 100644
+index 85255b5..fadcd20 100644
 --- a/hacks/webcollage.man
 +++ b/hacks/webcollage.man
-@@ -178,6 +178,11 @@ the given directory.
+@@ -176,6 +176,11 @@ the given directory.
  .TP 8
- .B \-fps
+ .B \-\-fps
  Display the current frame rate and CPU load (MacOS only).
 +.SH NOTES FOR FEDORA USER
 +Webcollage on Fedora uses '-directory' option by default, so it
-+.B does not connect to internet 
++.B does not connect to internet
 +and uses image files on your local disk. If you want webcollage to
 +search for image files on net, use webcollage.original .
  .SH ENVIRONMENT
  .PP
  .TP 8
 -- 
-2.25.2
+2.38.1
 

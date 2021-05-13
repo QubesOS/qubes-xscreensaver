@@ -8,12 +8,12 @@ Subject: [PATCH] utils
  1 files changed, 1 insertions(+), 1 deletions(-)
 
 diff --git a/utils/version.h b/utils/version.h
-index 054dd99..d5d7099 100644
+index 28347f3..420919e 100644
 --- a/utils/version.h
 +++ b/utils/version.h
-@@ -1,2 +1,2 @@
+@@ -1,4 +1,4 @@
  static const char screensaver_id[] =
--	"@(#)xscreensaver 5.45 (08-Dec-2020), by Jamie Zawinski (jwz@jwz.org)";
-+	"@(#)xscreensaver 5.45 (08-Dec-2020), by Jamie Zawinski";
-libgit2 1.0.1
-
+-	"@(#)xscreensaver 6.06 (11-Dec-2022), by Jamie Zawinski (jwz@jwz.org)";
++	"@(#)xscreensaver 6.06 (11-Dec-2022), by Jamie Zawinski";
+ #define XSCREENSAVER_VERSION "6.06"
+ #define XSCREENSAVER_RELEASED 1670788800

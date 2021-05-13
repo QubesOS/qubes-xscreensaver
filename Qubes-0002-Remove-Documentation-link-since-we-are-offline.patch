@@ -9,37 +9,44 @@ emove ref to jwz in help
  driver/xscreensaver-demo.ui | 7 -------
  2 files changed, 1 insertion(+), 8 deletions(-)
 
-diff --git a/driver/demo-Gtk.c b/driver/demo-Gtk.c
-index c938ef2..78a8de5 100644
---- a/driver/demo-Gtk.c
-+++ b/driver/demo-Gtk.c
-@@ -819,7 +819,7 @@ about_menu_cb (GtkAction *menu_action, gpointer user_data)
-   char *s, *s2;
-   char copy[1024];
-   char year[5];
--  char *desc = _("For updates, check https://www.jwz.org/xscreensaver/");
-+  char *desc = _("For updates, run qubes-dom0-update ");
+diff --git a/driver/prefs.ui b/driver/prefs.ui
+index a6e4e2e..85aa6e6 100644
+--- a/driver/prefs.ui
++++ b/driver/prefs.ui
+@@ -446,23 +446,6 @@
+                         <property name="spacing">0</property>
+                         <property name="orientation">horizontal</property>
+                         <property name="margin-top">12</property>
+-                        <child>
+-                          <object class="GtkButton" id="manual">
+-                            <property name="visible">True</property>
+-                            <property name="can-focus">True</property>
+-                            <property name="label" translatable="yes">_Documentation...</property>
+-                            <property name="use-underline">True</property>
+-                            <property name="relief">GTK_RELIEF_NORMAL</property>
+-                            <property name="focus-on-click">True</property>
+-                            <signal handler="manual_cb" name="clicked"/>
+-                          </object>
+-                          <packing>
+-                            <property name="padding">0</property>
+-                            <property name="expand">False</property>
+-                            <property name="fill">False</property>
+-                            <property name="pack-type">GTK_PACK_END</property>
+-                          </packing>
+-                        </child>
+                       </object>
+                       <packing>
+                         <property name="padding">0</property>
+diff --git a/driver/xscreensaver-command.c b/driver/xscreensaver-command.c
+index 0dab564..37e14c8 100644
+--- a/driver/xscreensaver-command.c
++++ b/driver/xscreensaver-command.c
+@@ -121,7 +121,7 @@ usage: %s -<option>\n\
+                 version number of xscreensaver-command.\n\
+ \n\
+   See the man page for more details.\n\
+-  For updates, check https://www.jwz.org/xscreensaver/\n\
++  For updates, run qubes-dom0-update\n\
+ \n";
  
-   s = strchr (vers, ',');
-   *s = 0;
-diff --git a/driver/xscreensaver-demo.ui b/driver/xscreensaver-demo.ui
-index f40f1c8..47b076b 100644
---- a/driver/xscreensaver-demo.ui
-+++ b/driver/xscreensaver-demo.ui
-@@ -183,13 +183,6 @@
-             <signal handler="about_menu_cb" name="activate"/>
-           </object>
-         </child>
--        <child>
--          <object class="GtkAction" id="doc_action">
--            <property name="name">doc_action</property>
--            <property name="label" translatable="yes">_Documentation...</property>
--            <signal handler="doc_menu_cb" name="activate"/>
--          </object>
--        </child>
-       </object>
-     </child>
-     <ui>
---
-libgit2 1.0.1
-
+ #define USAGE(A,B) do { \

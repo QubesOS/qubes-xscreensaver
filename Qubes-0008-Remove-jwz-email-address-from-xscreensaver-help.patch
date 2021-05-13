@@ -7,19 +7,29 @@ Subject: [PATCH] Remove jwz email address from xscreensaver help
  driver/xscreensaver.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
+diff --git a/driver/xscreensaver-command.c b/driver/xscreensaver-command.c
+index 37e14c8..03c1e9c 100644
+--- a/driver/xscreensaver-command.c
++++ b/driver/xscreensaver-command.c
+@@ -50,7 +50,7 @@ static char *usage = "\n\
+ usage: %s -<option>\n\
+ \n\
+   This program provides external control of a running xscreensaver process.\n\
+-  Version %s, copyright (c) 1991-%s Jamie Zawinski <jwz@jwz.org>.\n\
++  Version %s, copyright (c) 1991-%s Jamie Zawinski.\n\
+ \n\
+   The xscreensaver program is a daemon that runs in the background.\n\
+   You control a running xscreensaver process by sending it messages\n\
 diff --git a/driver/xscreensaver.c b/driver/xscreensaver.c
-index fc14b24..fef0335 100644
+index b67c4b3..43e4b65 100644
 --- a/driver/xscreensaver.c
 +++ b/driver/xscreensaver.c
-@@ -363,7 +363,7 @@ do_help (saver_info *si)
-   fflush (stdout);
-   fflush (stderr);
-   fprintf (stdout, "\
--xscreensaver %s, copyright (c) 1991-%s by Jamie Zawinski <jwz@jwz.org>\n\
-+xscreensaver %s, copyright (c) 1991-%s by Jamie Zawinski \n\
- \n\
-   All xscreensaver configuration is via the `~/.xscreensaver' file.\n\
-   Rather than editing that file by hand, just run `xscreensaver-demo':\n\
---
-libgit2 1.0.1
-
+@@ -673,7 +673,7 @@ print_banner(void)
+       fprintf (stderr,
+                "\tXScreenSaver " XSCREENSAVER_VERSION ", released %s\n"
+                "\tCopyright \302\251 1991-%d by"
+-               " Jamie Zawinski <jwz@jwz.org>\n\n",
++               " Jamie Zawinski\n\n",
+                buf, tm->tm_year + 1900);
+       if (months > 18)
+         fprintf (stderr,
