@@ -1,0 +1,44 @@
+From 86c84c08e6dc025c0a75248ffe02919406bd2e20 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Marek=20Marczykowski-G=C3=B3recki?=
+ <marmarek@invisiblethingslab.com>
+Date: Tue, 29 Jun 2021 01:48:23 +0200
+Subject: [PATCH] Fix race condition in discovering outputs
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+Organization: Invisible Things Lab
+Cc: Marek Marczykowski-Górecki <marmarek@invisiblethingslab.com>
+
+The randr_scan_monitors() function first counts available outputs, then
+allocates monitors array and fills it. The issue is that new outputs
+could be connected between allocating the array and filling it - and the
+function retrieves outputs count the second time while filling the
+array. This means the monitors array can be overflown.
+
+Fix this by retrieving outputs up to the count initially discovered,
+even if later check returns more outputs. This will possibly loose some
+outputs, but those extra outputs appearing there should generate another
+RANDR event, and randr_scan_monitors() should be called again - at which
+point it will handle them correctly.
+
+Signed-off-by: Marek Marczykowski-Górecki <marmarek@invisiblethingslab.com>
+---
+ driver/screens.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/driver/screens.c b/driver/screens.c
+index ed43a8d9..8c0d8a41 100644
+--- a/driver/screens.c
++++ b/driver/screens.c
+@@ -447,7 +447,7 @@ randr_scan_monitors (Display *dpy, char **errP)
+           int k;
+           XRRScreenResources *res = 
+             XRRGetScreenResources (dpy, RootWindowOfScreen (screen));
+-          for (k = 0; k < res->noutput; k++, j++)
++          for (k = 0; k < res->noutput && j < nscreens; k++, j++)
+             {
+               monitor *m = (monitor *) calloc (1, sizeof (monitor));
+               XRROutputInfo *rroi = XRRGetOutputInfo (dpy, res, 
+-- 
+2.31.1
+
