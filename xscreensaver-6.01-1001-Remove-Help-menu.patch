@@ -1,0 +1,55 @@
+From c050b306684f59257f620a78c4abf4ecfd4f2599 Mon Sep 17 00:00:00 2001
+From: unman <unman@thirdeyesecurity.org>
+Date: Wed, 29 Sep 2021 15:51:00 +0000
+Subject: [PATCH] Remove Help menu - the pop up is circular, and the online
+ docs are not available in dom0
+
+---
+ driver/xscreensaver.ui | 24 ------------------------
+ 1 file changed, 24 deletions(-)
+
+diff --git a/driver/xscreensaver.ui b/driver/xscreensaver.ui
+index e9e4522..c2f684a 100644
+--- a/driver/xscreensaver.ui
++++ b/driver/xscreensaver.ui
+@@ -186,26 +186,6 @@
+             <signal handler="exit_menu_cb" name="activate"/>
+           </object>
+         </child>
+-        <child>
+-          <object class="GtkAction" id="help">
+-            <property name="name">help</property>
+-            <property name="label" translatable="yes">_Help</property>
+-          </object>
+-        </child>
+-        <child>
+-          <object class="GtkAction" id="about_action">
+-            <property name="name">about_action</property>
+-            <property name="label" translatable="yes">_About...</property>
+-            <signal handler="about_menu_cb" name="activate"/>
+-          </object>
+-        </child>
+-        <child>
+-          <object class="GtkAction" id="doc_action">
+-            <property name="name">doc_action</property>
+-            <property name="label" translatable="yes">_Documentation...</property>
+-            <signal handler="doc_menu_cb" name="activate"/>
+-          </object>
+-        </child>
+       </object>
+     </child>
+     <ui>
+@@ -218,10 +198,6 @@
+           <separator/>
+           <menuitem name="exit_menu" action="exit_action"/>
+         </menu>
+-        <menu action="help">
+-          <menuitem name="about_menu" action="about_action"/>
+-          <menuitem name="doc_menu" action="doc_action"/>
+-        </menu>
+       </menubar>
+     </ui>
+   </object>
+-- 
+2.31.1
+

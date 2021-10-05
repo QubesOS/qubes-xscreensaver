@@ -84,6 +84,11 @@ Source100:       ja.po
 ##
 ## Patches
 ##
+## Qubes specific
+Patch20001:	xscreensaver-6.01-1001-Remove-Help-menu.patch
+Patch20002:	xscreensaver-6.01-1002-Remove-Help-menu.patch
+Patch20003:	xscreensaver-6.01-1003-Remove-Help-Button.patch
+
 # bug 129335
 Patch1:          xscreensaver-5.45-0001-barcode-glsnake-sanitize-the-names-of-modes.patch
 ## Patches already sent to the upsteam
@@ -115,6 +120,8 @@ Patch10003:     xscreensaver-6.00-0003-dialog.c-window_init-show-more-version-st
 # blurb: show 1/100 sec on linux
 Patch10005:     xscreensaver-6.00-0005-blurb-show-1-100-sec-on-linux.patch
 #
+
+
 # gcc warning cleanup
 # Some cppcheck cleanup
 #
@@ -397,6 +404,9 @@ find . -name \*.c -exec chmod ugo-x {} \;
 %__cat %PATCH5102 | %__git am
 %__cat %PATCH5103 | %__git am
 %__cat %PATCH5104 | %__git am
+%__cat %PATCH20001 | %__git am
+%__cat %PATCH20002 | %__git am
+%__cat %PATCH20003 | %__git am
 
 #%%__cat %PATCH13501 | %%__git am
 

@@ -1,0 +1,41 @@
+From 71af1a0dc865164bddf768e24a015c7b36f6068a Mon Sep 17 00:00:00 2001
+From: unman <unman@thirdeyesecurity.org>
+Date: Wed, 29 Sep 2021 17:00:53 +0000
+Subject: [PATCH] Remove Help button - useless in dom0. Remove email address
+
+---
+ driver/dialog.c | 11 +----------
+ 1 file changed, 1 insertion(+), 10 deletions(-)
+
+diff --git a/driver/dialog.c b/driver/dialog.c
+index e115cee..8cf96dd 100644
+--- a/driver/dialog.c
++++ b/driver/dialog.c
+@@ -969,7 +969,7 @@ window_init (Widget root_widget, Bool splash_p)
+       {
+         ws->body_label = (char *) malloc (100);
+         sprintf (ws->body_label,
+-           _("Copyright \xC2\xA9 1991-%.4s by\nJamie Zawinski <jwz@jwz.org>"),
++           _("Copyright \xC2\xA9 1991-%.4s by\nJamie Zawinski "),
+                   year);
+       }
+   }
+@@ -1492,15 +1492,6 @@ window_draw (window_state *ws)
+       lines[i].float_p = True;
+       lines[i].button = &ws->demo_button_state;
+       i++;
+-
+-      lines[i].text  = _("Help");
+-      lines[i].font  = ws->button_font;
+-      lines[i].fg    = ws->xft_button_foreground;
+-      lines[i].bg    = ws->button_background;
+-      lines[i].type  = BUTTON;
+-      lines[i].align = RIGHT;
+-      lines[i].button = &ws->help_button_state;
+-      i++;
+     }
+   else
+     {
+-- 
+2.31.1
+

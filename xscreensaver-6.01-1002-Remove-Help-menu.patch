@@ -1,0 +1,70 @@
+From 56432c5ab19e90366444ee62a4721d08011e6c96 Mon Sep 17 00:00:00 2001
+From: unman <unman@thirdeyesecurity.org>
+Date: Wed, 29 Sep 2021 16:12:53 +0000
+Subject: [PATCH] More Menu removal
+
+---
+ driver/XScreenSaver-Xm.ad   | 7 -------
+ driver/XScreenSaver_Xm_ad.h | 6 ------
+ driver/demo-Xm-widgets.c    | 3 ---
+ 3 files changed, 16 deletions(-)
+
+diff --git a/driver/XScreenSaver-Xm.ad b/driver/XScreenSaver-Xm.ad
+index 560c48e..afe7513 100644
+--- a/driver/XScreenSaver-Xm.ad
++++ b/driver/XScreenSaver-Xm.ad
+@@ -42,13 +42,6 @@ XScreenSaver*doc.fontList:       *-helvetica-medium-r-*-*-*-100-*-*-*-iso8859-1
+ *edit.paste.labelString:	Paste
+ *edit.paste.mnemonic:		P
+ 
+-*menubar*help.labelString:	Help
+-*menubar*help.mnemonic:		H
+-*help.about.labelString:	About...
+-*help.about.mnemonic:		A
+-*help.docMenu.labelString:	Documentation...
+-*help.docMenu.mnemonic:		D
+-
+ *demoTab.marginWidth:		10
+ *optionsTab.marginWidth:	10
+ 
+diff --git a/driver/XScreenSaver_Xm_ad.h b/driver/XScreenSaver_Xm_ad.h
+index 371e0a2..1045834 100644
+--- a/driver/XScreenSaver_Xm_ad.h
++++ b/driver/XScreenSaver_Xm_ad.h
+@@ -34,12 +34,6 @@
+ "*edit.copy.mnemonic:		C",
+ "*edit.paste.labelString:	Paste",
+ "*edit.paste.mnemonic:		P",
+-"*menubar*help.labelString:	Help",
+-"*menubar*help.mnemonic:		H",
+-"*help.about.labelString:	About...",
+-"*help.about.mnemonic:		A",
+-"*help.docMenu.labelString:	Documentation...",
+-"*help.docMenu.mnemonic:		D",
+ "*demoTab.marginWidth:		10",
+ "*optionsTab.marginWidth:	10",
+ "*XmScrolledWindow.topOffset:	10",
+diff --git a/driver/demo-Xm-widgets.c b/driver/demo-Xm-widgets.c
+index d47259b..f1261b0 100644
+--- a/driver/demo-Xm-widgets.c
++++ b/driver/demo-Xm-widgets.c
+@@ -129,8 +129,6 @@ create_xscreensaver_demo (Widget parent)
+             XtSetArg (av [ac], XmNsubMenuId, menu); ac++;
+             item = XmCreateCascadeButtonGadget (menubar, menus[i]+1, av, ac);
+ 
+-            if (!strcmp (menus[i]+1, "help"))
+-              XtVaSetValues(menubar, XmNmenuHelpWidget, item, NULL);
+           }
+         XtManageChild (item);
+       }
+@@ -219,7 +217,6 @@ create_demos_page (Widget parent)
+          HR
+          ButtonBox2 (vertical)
+            Button ("Demo")
+-           Button ("Documentation")
+    */
+   Widget form1, form2, form3, form4;
+   Widget scroller, list, buttonbox1, down, up;
+-- 
+2.31.1
+
