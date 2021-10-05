@@ -217,6 +217,8 @@ BuildRequires:   pkgconfig(libcap)
 %if 0%{?support_systemd} >= 1
 BuildRequires:   pkgconfig(libsystemd)
 %endif
+# Dont make systemd support optional - we want it in F-32
+BuildRequires:   pkgconfig(libsystemd)
 %if 0%{?fedora}
 BuildRequires:   %{default_text}
 %endif
