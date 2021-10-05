@@ -1,0 +1,100 @@
+From 63b985a5aae04b89f6a4357cb10dfeba9f482cd7 Mon Sep 17 00:00:00 2001
+From: Mamoru TASAKA <mtasaka@fedoraproject.org>
+Date: Tue, 6 Jul 2021 22:27:21 +0900
+Subject: [PATCH 1/2] main_loop: consistently check init file after some
+ activitity occurred.
+
+Current main_loop logic is:
+* Block until some activity happens or timeout happens,
+  timeout is until last activity + blank_timeout
+* When block is released, if 60sec has already passed since the last
+  time init file is checked, init file is checked again.
+
+So:
+* When a user has been editing init file for some long time,
+  activity has been occuring.
+  In this case, init file is checked every 60sec.
+* However when:
+  - on "a" time init file is checked
+  - user edits init file, shortly
+  - then user stops activity
+  then the edited init file won't checked until last activity + blank_timeout
+  (because block won't be released until that time)
+
+This behavior is inconsistent.
+
+With this patch,
+* When block is released, if 45sec (instead of 60sec) has already passed since the last
+  time init file is checked, init file is checked again.
+* When some activity happens, main_loop is next blocked until some activity
+  happens or timeout, timeout is until last activity + 50sec, which
+  is shorter than activity + blank_timeout, because blank_timeout is more than 60sec.
+
+Then when user stops activity, init file is checked again after 50sec (block is released),
+so it is guaranteed that init file change is checked before 1min, when user may expect
+blanking happens (when user changes init file so that blank should happen after 1 min).
+So this behavior is consistent.
+---
+ driver/xscreensaver.c | 13 +++++++++++--
+ 1 file changed, 11 insertions(+), 2 deletions(-)
+
+diff --git a/driver/xscreensaver.c b/driver/xscreensaver.c
+index bfce5f7..24ea27c 100644
+--- a/driver/xscreensaver.c
++++ b/driver/xscreensaver.c
+@@ -1388,6 +1388,7 @@ main_loop (Display *dpy)
+   time_t last_checked_init_file = now;
+   Bool authenticated_p = False;
+   Bool ignore_motion_p = False;
++  Bool maybe_init_file_changed_p = False;
+ 
+   enum { UNBLANKED, BLANKED, LOCKED, AUTH } current_state = UNBLANKED;
+ 
+@@ -1471,7 +1472,12 @@ main_loop (Display *dpy)
+         struct timeval tv;
+         time_t until;
+         switch (current_state) {
+-        case UNBLANKED: until = active_at + blank_timeout; break;
++        case UNBLANKED:
++        {
++            until = active_at + blank_timeout;
++            if (maybe_init_file_changed_p) until = active_at + 50;
++            break;
++        }
+         case BLANKED:   until = blanked_at + lock_timeout; break;
+         default:        until = 0;
+         }
+@@ -1502,6 +1508,7 @@ main_loop (Display *dpy)
+       }
+ 
+       now = time ((time_t *) 0);
++      maybe_init_file_changed_p = False;
+ 
+ 
+       /********************************************************************
+@@ -1566,6 +1573,7 @@ main_loop (Display *dpy)
+           XEvent xev;
+           XNextEvent (dpy, &xev);
+           now = time ((time_t *) 0);
++          maybe_init_file_changed_p = True;
+ 
+           /****************************************************************
+            Client Messages
+@@ -1905,12 +1913,13 @@ main_loop (Display *dpy)
+       /* If it's time, see if the .xscreensaver file has changed, since that
+          might change the blank and lock timeouts.
+        */
+-      if (now >= last_checked_init_file + 60)
++      if (now >= last_checked_init_file + 45)
+         {
+           last_checked_init_file = now;
+           if (verbose_p)
+             fprintf(stderr,"%s: checking init file\n", blurb());
+           read_init_files (False);
++          maybe_init_file_changed_p = False;
+         }
+ 
+       /* Now that events have been processed, see if the state should change,
+-- 
+2.31.1
+

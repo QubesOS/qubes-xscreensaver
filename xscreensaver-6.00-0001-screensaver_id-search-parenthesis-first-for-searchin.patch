@@ -1,0 +1,65 @@
+From ef72c9500015a36bf0b4b412337ec2d890d092b6 Mon Sep 17 00:00:00 2001
+From: Mamoru TASAKA <mtasaka@fedoraproject.org>
+Date: Fri, 2 Apr 2021 18:46:14 +0900
+Subject: [PATCH] screensaver_id: search parenthesis first for searching year
+
+Fedora package modifies screensaver_id string to %%version-%%release .
+Adjust window_init function so that "year" information is
+parsed correctly.
+---
+ driver/demo-Gtk.c             | 4 +++-
+ driver/dialog.c               | 4 +++-
+ driver/xscreensaver-systemd.c | 4 +++-
+ 3 files changed, 9 insertions(+), 3 deletions(-)
+
+diff --git a/driver/demo-Gtk.c b/driver/demo-Gtk.c
+index b5e82e2..3874045 100644
+--- a/driver/demo-Gtk.c
++++ b/driver/demo-Gtk.c
+@@ -779,8 +779,10 @@ about_menu_cb (GtkAction *menu_action, gpointer user_data)
+   char *desc = _("For updates, check https://www.jwz.org/xscreensaver/");
+ 
+   char *version = strdup (screensaver_id + 17);
+-  char *year = strchr (version, '-');
++  char *year;
+   char *s = strchr (version, ' ');
++  year = strchr (version, '('); /* Search parenthesis first */
++  year = strchr (year, '-');
+   *s = 0;
+   year = strchr (year+1, '-') + 1;
+   s = strchr (year, ')');
+diff --git a/driver/dialog.c b/driver/dialog.c
+index fce74c4..9a8173f 100644
+--- a/driver/dialog.c
++++ b/driver/dialog.c
+@@ -949,8 +949,10 @@ window_init (Widget root_widget, Bool splash_p)
+   /* Put the version number in the label. */
+   {
+     char *version = strdup (screensaver_id + 17);
+-    char *year = strchr (version, '-');
++    char *year;
+     char *s = strchr (version, ' ');
++    year = strchr (version, '('); /* Search parenthesis first */
++    year = strchr (year, '-');
+     *s = 0;
+     year = strchr (year+1, '-') + 1;
+     s = strchr (year, ')');
+diff --git a/driver/xscreensaver-systemd.c b/driver/xscreensaver-systemd.c
+index d06174a..c9a66a1 100644
+--- a/driver/xscreensaver-systemd.c
++++ b/driver/xscreensaver-systemd.c
+@@ -950,8 +950,10 @@ main (int argc, char **argv)
+ {
+   int i;
+   char *version = strdup (screensaver_id + 17);
+-  char *year = strchr (version, '-');
++  char *year;
+   char *s = strchr (version, ' ');
++  year = strchr (version, '('); /* Search parenthesis first */
++  year = strchr (year, '-');
+   *s = 0;
+   year = strchr (year+1, '-') + 1;
+   s = strchr (year, ')');
+-- 
+2.31.1
+

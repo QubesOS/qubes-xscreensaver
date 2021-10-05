@@ -1,0 +1,56 @@
+From 6af675deb2bac3cce2dcdb9b19cce23d946d680a Mon Sep 17 00:00:00 2001
+From: Mamoru TASAKA <mtasaka@fedoraproject.org>
+Date: Sun, 11 Jul 2021 14:28:57 +0900
+Subject: [PATCH] destroy_window: check ws->xftdraw to avoid nullptr
+ dereference
+
+Downstream report:
+https://bugzilla.redhat.com/show_bug.cgi?id=1966287
+
+There was a bug report that xscreensaver-auth segfaults that
+"
+when resuming from suspension, sometimes the screen is
+blank and only the cursor is visible and responds to movement.
+"
+and crash detector says xscreensaver-auth was segfaulting like:
+
+===================================================================
+(gdb) bt
+#0  0x00007f83a9a46715 in XftDrawDestroy (draw=0x0) at
+/usr/src/debug/libXft-2.3.3-6.fc34.x86_64/src/xftdraw.c:278
+#1  0x000055d0754f9c6e in destroy_window (ws=0x55d076c04c80) at
+../../driver/dialog.c:1764
+#2  0x000055d07550027e in xscreensaver_auth_finished (closure=<optimized out>,
+authenticated_p=<optimized out>) at ../../driver/dialog.c:2499
+#3  0x000055d0754f5e16 in xscreensaver_auth (conv_fn=<optimized out>,
+finished_fn=<optimized out>, closure=<optimized out>) at
+../../driver/passwd.c:266
+#4  main (argc=<optimized out>, argv=<optimized out>) at
+../../driver/xscreensaver-auth.c:324
+===================================================================
+
+This means that when doing "XftDrawDestroy (ws->xftdraw);" in destroy_window(),
+ws->xftdraw is null.
+
+Currently I cannot figure out why this can happen, however for now
+I add a nullptr check to avoid this...
+---
+ driver/dialog.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/driver/dialog.c b/driver/dialog.c
+index a17e9af..1f2c957 100644
+--- a/driver/dialog.c
++++ b/driver/dialog.c
+@@ -1790,7 +1790,7 @@ destroy_window (window_state *ws)
+   XftColorFree (ws->dpy, DefaultVisualOfScreen (ws->screen),
+                 DefaultColormapOfScreen (ws->screen),
+                 &ws->xft_error_foreground);
+-  XftDrawDestroy (ws->xftdraw);
++  if (ws->xftdraw) XftDrawDestroy (ws->xftdraw);
+ 
+ # if 0  /* screw this, we're exiting anyway */
+   if (ws->foreground != black && ws->foreground != white)
+-- 
+2.31.1
+

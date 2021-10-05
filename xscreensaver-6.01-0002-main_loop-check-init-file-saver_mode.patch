@@ -1,0 +1,95 @@
+From 721236d9406c5ecba9e95edff6f4105799968596 Mon Sep 17 00:00:00 2001
+From: Mamoru TASAKA <mtasaka@fedoraproject.org>
+Date: Tue, 6 Jul 2021 23:38:11 +0900
+Subject: [PATCH 2/2] main_loop: check init file saver_mode
+
+With xscreensaver 6 saver/gfx split, -gfx checks saver_mode, but
+currently saver does not check saver_mode.
+As a result, even if user has set saver_mode to "off" in init file,
+saver will blank screen.
+
+With this patch, saver will check saver_mode again.
+---
+ driver/xscreensaver.c | 24 +++++++++++++++++++++++-
+ 1 file changed, 23 insertions(+), 1 deletion(-)
+
+diff --git a/driver/xscreensaver.c b/driver/xscreensaver.c
+index 24ea27c..1c88a00 100644
+--- a/driver/xscreensaver.c
++++ b/driver/xscreensaver.c
+@@ -140,6 +140,7 @@
+ #include <X11/cursorfont.h>
+ #include <X11/Xos.h>
+ #include <X11/extensions/XInput2.h>
++#include <X11/Intrinsic.h>
+ 
+ #include "xmu.h"
+ #include "blurb.h"
+@@ -147,6 +148,7 @@
+ #include "clientmsg.h"
+ #include "xinput.h"
+ #include "prefs.h"
++#include "types.h"
+ 
+ 
+ #undef countof
+@@ -171,6 +173,7 @@ static Bool locking_disabled_p = False;
+ static unsigned int blank_timeout = 0;
+ static unsigned int lock_timeout = 0;
+ static unsigned int pointer_hysteresis = 0;
++static saver_mode mode_pref = ONE_HACK;
+ 
+ /* Subprocesses. */
+ #define SAVER_GFX_PROGRAM     "xscreensaver-gfx"
+@@ -677,6 +680,19 @@ parse_time (const char *string)
+   return ((h * 60 * 60) + (m * 60) + s);
+ }
+ 
++/* Mostly copied from prefsw.c.
++*/
++static int
++parse_mode (const char *s)
++{
++    /* most copied from */
++    if      (s && !strcasecmp (s, "one"))         return ONE_HACK;
++    else if (s && !strcasecmp (s, "blank"))       return BLANK_ONLY;
++    else if (s && !strcasecmp (s, "off"))         return DONT_BLANK;
++    else if (s && !strcasecmp (s, "random-same")) return RANDOM_HACKS_SAME;
++    else                                          return RANDOM_HACKS;
++}
++
+ 
+ /* This program only needs a very few options from the init file, so it
+    just reads the .ad file and the .xscreensaver file directly rather
+@@ -705,6 +721,7 @@ static void init_line_handler (int lineno,
+       if (i >= 0)
+         pointer_hysteresis = i;
+     }
++  if (!strcmp (key, "mode")) mode_pref = parse_mode(val);
+ }
+ 
+ static void
+@@ -1947,7 +1964,8 @@ main_loop (Display *dpy)
+             force_lock_p = False;   /* Single shot */
+           }
+         else if (force_blank_p ||
+-                 now >= active_at + blank_timeout)
++                 ((mode_pref != DONT_BLANK) &&
++                  (now >= active_at + blank_timeout)))
+           {
+             fprintf (stderr, "%s: blanking\n", blurb());
+             if (grab_keyboard_and_mouse (mouse_screen (dpy)))
+@@ -1960,6 +1978,10 @@ main_loop (Display *dpy)
+               fprintf (stderr, "%s: unable to grab -- blanking aborted!\n",
+                        blurb());
+           }
++        else if ((mode_pref == DONT_BLANK) && (now >= active_at + blank_timeout))
++          {
++            fprintf (stderr, "%s: blanking disabled\n", blurb());
++          }
+ 
+         if (current_state == BLANKED || current_state == LOCKED)
+           {
+-- 
+2.31.1
+
