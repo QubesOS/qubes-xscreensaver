@@ -18,7 +18,7 @@ index 9a8173f..3020880 100644
      ws->heading_label = (char *) malloc (100);
      ws->version = strdup(version);
 -    sprintf (ws->heading_label, "XScreenSaver %.4s, v%.10s", year, version);
-+    sprintf (ws->heading_label, "XScreenSaver %.4s, v%.14s", year, version);
++    sprintf (ws->heading_label, "QScreenSaver %.4s, v%.14s", year, version);
  
      if (splash_p)
        {
