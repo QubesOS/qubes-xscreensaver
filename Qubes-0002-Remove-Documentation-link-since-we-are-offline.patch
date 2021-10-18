@@ -1,0 +1,45 @@
+From db55a44af41fd2504adf166de3ed64fd60dc4315 Mon Sep 17 00:00:00 2001
+From: unman <unman@thirdeyesecurity.org>
+Date: Sun, 28 Feb 2021 14:26:19 +0000
+Subject: [PATCH] Remove Documentation link (since we are offline).
+
+emove ref to jwz in help
+---
+ driver/demo-Gtk.c           | 2 +-
+ driver/xscreensaver-demo.ui | 7 -------
+ 2 files changed, 1 insertion(+), 8 deletions(-)
+
+diff --git a/driver/demo-Gtk.c b/driver/demo-Gtk.c
+index c938ef2..78a8de5 100644
+--- a/driver/demo-Gtk.c
++++ b/driver/demo-Gtk.c
+@@ -819,7 +819,7 @@ about_menu_cb (GtkAction *menu_action, gpointer user_data)
+   char *s, *s2;
+   char copy[1024];
+   char year[5];
+-  char *desc = _("For updates, check https://www.jwz.org/xscreensaver/");
++  char *desc = _("For updates, run qubes-dom0-update ");
+ 
+   s = strchr (vers, ',');
+   *s = 0;
+diff --git a/driver/xscreensaver-demo.ui b/driver/xscreensaver-demo.ui
+index f40f1c8..47b076b 100644
+--- a/driver/xscreensaver-demo.ui
++++ b/driver/xscreensaver-demo.ui
+@@ -183,13 +183,6 @@
+             <signal handler="about_menu_cb" name="activate"/>
+           </object>
+         </child>
+-        <child>
+-          <object class="GtkAction" id="doc_action">
+-            <property name="name">doc_action</property>
+-            <property name="label" translatable="yes">_Documentation...</property>
+-            <signal handler="doc_menu_cb" name="activate"/>
+-          </object>
+-        </child>
+       </object>
+     </child>
+     <ui>
+--
+libgit2 1.0.1
+

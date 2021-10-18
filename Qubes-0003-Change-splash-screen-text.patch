@@ -1,0 +1,34 @@
+From 83fadf626e18fba641dcc13d9d38cd0f5c329657 Mon Sep 17 00:00:00 2001
+From: unman <unman@thirdeyesecurity.org>
+Date: Sun, 28 Feb 2021 15:44:41 +0000
+Subject: [PATCH] Change splash screen text
+
+---
+ driver/XScreenSaver_ad.h | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/driver/XScreenSaver_ad.h b/driver/XScreenSaver_ad.h
+index e4b4eb4..93014b9 100644
+--- a/driver/XScreenSaver_ad.h
++++ b/driver/XScreenSaver_ad.h
+@@ -81,14 +81,14 @@
+ "*passwd.thermometer.foreground:	#4464AC",
+ "*passwd.thermometer.background:	#FFFFFF",
+ "*passwd.thermometer.width:	8",
+-"*passwd.heading.label:		XScreenSaver %s",
++"*passwd.heading.label:		QubesOS 4.0",
+ "*passwd.body.label:		This screen is locked.",
+ "*passwd.unlock.label:		OK",
+ "*passwd.login.label:		New Login",
+ "*passwd.user.label:		Username:",
+-"*splash.heading.label:		XScreenSaver %s",
++"*splash.heading.label:		QubesOS 4.0",
+ "*splash.body.label:		Copyright \\251 1991-2020 by",
+-"*splash.body2.label:		Jamie Zawinski <jwz@jwz.org>",
++"*splash.body2.label:		Jamie Zawinski" ,
+ "*splash.demo.label:		Settings",
+ "*splash.help.label:		Help",
+ "*programs:								      \
+--
+libgit2 1.0.1
+
