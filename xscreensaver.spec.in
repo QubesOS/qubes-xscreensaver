@@ -74,6 +74,12 @@ Source12:        xscreensaver-autostart.desktop
 %endif
 # wrapper script for switching user (bug 1878730)
 Source13:        xscreensaver-newlogin-wrapper
+
+Source20001:    qubes-logo-50.gif
+Source20002:    qubes-logo-50.xpm
+Source20003:    qubes-logo-180.gif
+Source20004:    qubes-logo-180.xpm
+
 ##
 ## Patches
 ##
@@ -438,6 +444,12 @@ silence_hack(){
    done
    set -x
 }
+
+# Qubes logos
+cp -p %{SOURCE20001} utils/images/logo-50.gif
+cp -p %{SOURCE20002} utils/images/logo-50.xpm
+cp -p %{SOURCE20003} utils/images/logo-180.gif
+cp -p %{SOURCE20004} utils/images/logo-180.xpm
 
 %global PATCH_desc \
 # change some files to UTF-8
