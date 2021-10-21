@@ -1,0 +1,32 @@
+From c78d51772d9a7814a0d71a3d69fbd140766e6a46 Mon Sep 17 00:00:00 2001
+From: unman <unman@thirdeyesecurity.org>
+Date: Thu, 21 Oct 2021 17:51:42 +0000
+Subject: [PATCH] Update to 4.1 branding
+
+---
+ driver/XScreenSaver.ad.in | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/driver/XScreenSaver.ad.in b/driver/XScreenSaver.ad.in
+index f7d3546..4633692 100644
+--- a/driver/XScreenSaver.ad.in
++++ b/driver/XScreenSaver.ad.in
+@@ -316,13 +316,13 @@ XScreenSaver.bourneShell:		/bin/sh
+ 
+ ! Static text in the dialog boxes:
+ !
+-*passwd.heading.label:		Qubes OS 4.0
++*passwd.heading.label:		Qubes OS 4.1
+ *passwd.body.label:		This screen is locked.
+ *passwd.unlock.label:		OK
+ *passwd.login.label:		New Login
+ *passwd.user.label:		Username:
+ 
+-*splash.heading.label:		Qubes OS 4.0
++*splash.heading.label:		Qubes OS 4.1
+ *splash.body.label:		Copyright \251 1991-2020 by
+ *splash.body2.label:		Jamie Zawinski 
+ *splash.demo.label:		Settings
+--
+libgit2 1.0.1
+
