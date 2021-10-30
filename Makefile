@@ -1,4 +1,4 @@
-VERSION := $(shell cat version)
+VERSION := $(file <version)
 URL := https://www.jwz.org/xscreensaver/xscreensaver-$(VERSION).tar.gz
 
 # upstream remove most of the archives, use our own mirror to have reliable builds
