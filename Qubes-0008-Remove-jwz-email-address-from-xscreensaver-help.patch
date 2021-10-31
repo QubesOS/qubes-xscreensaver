@@ -1,0 +1,25 @@
+From 7ef84f87c26cdae43da427888332b98b79283651 Mon Sep 17 00:00:00 2001
+From: unman <unman@thirdeyesecurity.org>
+Date: Tue, 19 Oct 2021 15:31:09 +0000
+Subject: [PATCH] Remove jwz email address from xscreensaver help
+
+---
+ driver/xscreensaver.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/driver/xscreensaver.c b/driver/xscreensaver.c
+index fc14b24..fef0335 100644
+--- a/driver/xscreensaver.c
++++ b/driver/xscreensaver.c
+@@ -363,7 +363,7 @@ do_help (saver_info *si)
+   fflush (stdout);
+   fflush (stderr);
+   fprintf (stdout, "\
+-xscreensaver %s, copyright (c) 1991-%s by Jamie Zawinski <jwz@jwz.org>\n\
++xscreensaver %s, copyright (c) 1991-%s by Jamie Zawinski \n\
+ \n\
+   All xscreensaver configuration is via the `~/.xscreensaver' file.\n\
+   Rather than editing that file by hand, just run `xscreensaver-demo':\n\
+--
+libgit2 1.0.1
+

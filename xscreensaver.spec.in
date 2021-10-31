@@ -74,6 +74,12 @@ Source12:        xscreensaver-autostart.desktop
 %endif
 # wrapper script for switching user (bug 1878730)
 Source13:        xscreensaver-newlogin-wrapper
+
+Source20001:    qubes-logo-50.gif
+Source20002:    qubes-logo-50.xpm
+Source20003:    qubes-logo-180.gif
+Source20004:    qubes-logo-180.xpm
+
 ##
 ## Patches
 ##
@@ -87,6 +93,14 @@ Patch2:          90_remove_Easter_egg_about_version.patch
 Patch3:          xscreensaver-5.45-0008-Allow-empty-reason-for-dbus-Inhibit-method.patch
 Patch4:          0001-Fix-updating-outputs-info-v2.patch
 Patch5:          0001-Fix-race-condition-in-discovering-outputs.patch
+
+Patch6:          Qubes-0001-Brand-with-Qubes.patch
+Patch7:          Qubes-0002-Remove-Documentation-link-since-we-are-offline.patch
+Patch8:          Qubes-0007-utils.patch
+Patch9:          Qubes-0008-Remove-jwz-email-address-from-xscreensaver-help.patch
+Patch10:          Qubes-0009-Update-to-4-1-branding.patch
+
+
 
 ## Patches already sent to the upsteam
 ## Patches which must be discussed with upstream
@@ -388,6 +402,12 @@ find . -name \*.c -exec chmod ugo-x {} \;
 %__cat %PATCH3 | %__git am
 %__cat %PATCH4 | %__git am
 %__cat %PATCH5 | %__git am
+%__cat %PATCH6 | %__git am
+%__cat %PATCH7 | %__git am
+%__cat %PATCH8 | %__git am
+%__cat %PATCH9 | %__git am
+%__cat %PATCH10 | %__git am
+
 %__cat %PATCH21 | %__git am
 %__cat %PATCH52 | %__git am
 
@@ -440,6 +460,12 @@ silence_hack(){
    done
    set -x
 }
+
+# Qubes logos
+cp -p %{SOURCE20001} utils/images/logo-50.gif
+cp -p %{SOURCE20002} utils/images/logo-50.xpm
+cp -p %{SOURCE20003} utils/images/logo-180.gif
+cp -p %{SOURCE20004} utils/images/logo-180.xpm
 
 %global PATCH_desc \
 # change some files to UTF-8
