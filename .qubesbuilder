@@ -1,6 +1,6 @@
 host:
   rpm:
-    spec:
+    build:
     - xscreensaver.spec
 source:
   files:
