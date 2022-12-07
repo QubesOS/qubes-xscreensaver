@@ -10,7 +10,7 @@
 %define split_getimage   1
 %endif
 
-%define fedora_rel    5
+%define fedora_rel    @REL@
 
 %global use_clang_as_cc 0
 %global use_clang_analyze 0
