@@ -1,0 +1,136 @@
+From 5109692e44c9bbc8a971d2b72c6b6fd39c213d6a Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Marek=20Marczykowski-G=C3=B3recki?=
+ <marmarek@invisiblethingslab.com>
+Date: Sun, 29 May 2022 21:16:55 +0200
+Subject: [PATCH 2/4] Clear blank screen on monitor power on also when no hack
+ is configured
+
+X server apparently ignores XClearWindow() (and other changes to the
+window content) when monitor is powered off. This applies to a case when
+monitor is powered off first, and xscreensaver kicks in only later.
+Normally xscreensaver doesn't do that, but it is a thing that user might
+do themselves. xscreensaver-gfx does calls XClearWindow() in various
+places to account for this case, but it misses one when no hack is
+configured (just screen blanking is selected).
+
+Furthermore, watch for MapNotify event whenever new window shows up -
+which includes xscreensaver-auth window when the user wake up the
+monitor. This tries to blank the screen as soon as possible after
+monitor power on. Unfortunately, X11 does not provide events about
+monitor power state directly.
+---
+ driver/windows.c          | 38 +++++++++++++++++++++++++++++++-------
+ driver/xscreensaver-gfx.c |  6 ++++++
+ driver/xscreensaver.h     |  1 +
+ 3 files changed, 38 insertions(+), 7 deletions(-)
+
+diff --git a/driver/windows.c b/driver/windows.c
+index 6f67e138..9f8bef78 100644
+--- a/driver/windows.c
++++ b/driver/windows.c
+@@ -970,7 +970,6 @@ watchdog_timer (XtPointer closure, XtIntervalId *id)
+ {
+   saver_info *si = (saver_info *) closure;
+   saver_preferences *p = &si->prefs;
+-  Bool running_p, on_p, terminating_p;
+ 
+   /* If the DPMS settings on the server have changed, change them back to
+      what ~/.xscreensaver says they should be. */
+@@ -981,6 +980,20 @@ watchdog_timer (XtPointer closure, XtIntervalId *id)
+ 
+   raise_windows (si);
+ 
++  refresh_windows (si);
++
++  /* Re-schedule this timer.  The watchdog timer defaults to a bit less
++     than the hack cycle period, but is never longer than one hour.
++   */
++  si->watchdog_id = 0;
++  reset_watchdog_timer (si);
++}
++
++void
++refresh_windows (saver_info *si)
++{
++  Bool running_p, on_p, terminating_p;
++
+   running_p = any_screenhacks_running_p (si);
+   on_p = monitor_powered_on_p (si->dpy);
+   terminating_p = si->terminating_p;
+@@ -1018,13 +1031,24 @@ watchdog_timer (XtPointer closure, XtIntervalId *id)
+           for (i = 0; i < si->nscreens; i++)
+             spawn_screenhack (&si->screens[i]);
+         }
++      else
++        {
++          /* If no hack is running, clear the window - previous updates might have
++           * been done when the monitor was powered off, and so - ignored.
++           */
++          int i;
++          if (si->prefs.verbose_p)
++            fprintf (stderr,
++                     "%s: no hack running, refreshing blank window\n",
++                     blurb());
++          for (i = 0; i < si->nscreens; i++)
++            {
++              saver_screen_info *ssi = &si->screens[i];
++              XClearWindow (si->dpy, ssi->screensaver_window);
++            }
++          XSync (si->dpy, False);
++        }
+     }
+-
+-  /* Re-schedule this timer.  The watchdog timer defaults to a bit less
+-     than the hack cycle period, but is never longer than one hour.
+-   */
+-  si->watchdog_id = 0;
+-  reset_watchdog_timer (si);
+ }
+ 
+ 
+diff --git a/driver/xscreensaver-gfx.c b/driver/xscreensaver-gfx.c
+index 870423c2..09315f7f 100644
+--- a/driver/xscreensaver-gfx.c
++++ b/driver/xscreensaver-gfx.c
+@@ -146,6 +146,7 @@ connect_to_server (saver_info *si)
+   XrmOptionDescRec options;
+   char *p;
+   int ac = 1;
++  int i;
+   char *av[] = { "xscreensaver" };    /* For Xt and Xrm purposes */
+ 
+   XSetErrorHandler (saver_ehandler);
+@@ -178,6 +179,9 @@ connect_to_server (saver_info *si)
+       fprintf (stderr, "%s: xscreensaver does not seem to be running!\n",
+                blurb());
+     }
++
++  for (i = 0; i < ScreenCount(si->dpy); i++)
++    XSelectInput (si->dpy, RootWindow(si->dpy, i), SubstructureNotifyMask);
+ }
+ 
+ 
+@@ -391,6 +395,8 @@ main_loop (saver_info *si, Bool init_p)
+ 
+       if (event.x_event.xany.type == ClientMessage)
+         handle_clientmessage (si, &event.x_event);
++      else if (event.x_event.xany.type == MapNotify)
++        refresh_windows (si);
+ # ifdef HAVE_RANDR
+       else if (si->using_randr_extension &&
+                (event.x_event.type == 
+diff --git a/driver/xscreensaver.h b/driver/xscreensaver.h
+index 4bd84b47..b89ab87b 100644
+--- a/driver/xscreensaver.h
++++ b/driver/xscreensaver.h
+@@ -53,6 +53,7 @@ extern void initialize_screensaver_window (saver_info *si);
+ extern void blank_screen (saver_info *si);
+ extern void unblank_screen (saver_info *si);
+ extern void resize_screensaver_window (saver_info *si);
++extern void refresh_windows (saver_info *si);
+ 
+ extern void get_screen_viewport (saver_screen_info *ssi,
+                                  int *x_ret, int *y_ret,
+-- 
+2.37.3
+

@@ -126,6 +126,11 @@ Patch10001:     xscreensaver-6.00-0001-screensaver_id-search-parenthesis-first-f
 # Not apply by default
 # XIO: print C backtrace on error
 Patch13501:      xscreensaver-5.35-0101-XIO-print-C-backtrace-on-error.patch
+
+Patch14001: 0001-Clear-blank-screen-on-monitor-power-on-also-when-no-.patch
+Patch14002: 0002-Bring-xscreensaver-gfx-above-other-applications-when.patch
+Patch14003: 0003-Use-xshm-to-blank-the-screen-even-if-no-gradual-fade.patch
+
 #
 # Patches end
 Requires:        xscreensaver-base = %{epoch}:%{version}-%{release}
@@ -404,6 +409,10 @@ find . -name \*.c -exec chmod ugo-x {} \;
 
 #%%__cat %PATCH3607 | %__git am
 %__cat %PATCH10001 | %__git am
+
+%__cat %PATCH14001 | %__git am
+%__cat %PATCH14002 | %__git am
+%__cat %PATCH14003 | %__git am
 
 #%%__cat %PATCH13501 | %%__git am
 

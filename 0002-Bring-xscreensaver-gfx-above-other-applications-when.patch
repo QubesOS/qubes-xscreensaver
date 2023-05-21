@@ -1,0 +1,114 @@
+From 710bd4232f2f632e2d0ceec38243e49fa2bedfe6 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Marek=20Marczykowski-G=C3=B3recki?=
+ <marmarek@invisiblethingslab.com>
+Date: Sun, 29 May 2022 21:25:22 +0200
+Subject: [PATCH 3/4] Bring xscreensaver-gfx above other applications when one
+ shows up
+
+Some applications (notably - notification daemons) try to map their
+windows on the top of everything. If the screen is locked, they should
+_not_ show up above screenlocker window. Whenever a new window is
+mapped, force xscreensaver above it - unless it's another xscreensaver
+window (to avoid xscreensaver-auth fighting with xscreensaver-gfx).
+---
+ driver/windows.c          | 54 +++++++++++++++++++++++++++++++++++++++
+ driver/xscreensaver-gfx.c |  5 +++-
+ driver/xscreensaver.h     |  1 +
+ 3 files changed, 59 insertions(+), 1 deletion(-)
+
+diff --git a/driver/windows.c b/driver/windows.c
+index 9f8bef78..c5dbd476 100644
+--- a/driver/windows.c
++++ b/driver/windows.c
+@@ -1051,6 +1051,60 @@ refresh_windows (saver_info *si)
+     }
+ }
+ 
++static int
++ignore_all_errors_ehandler (Display *dpy, XErrorEvent *error)
++{
++  return 0;
++}
++
++/* Raise xscreensaver above specified window, unless it's another xscreensaver
++ * window (like xscreensaver-auth).
++ */
++void raise_windows_above(saver_info *si, Window w)
++{
++  XClassHint ch;
++  int i;
++  Window windows[2];
++  Bool is_xscreensaver = False;
++  XErrorHandler old_handler;
++
++  XSync (si->dpy, False);
++  /* window may disappear in the meantime - don't crash on that */
++  old_handler = XSetErrorHandler (ignore_all_errors_ehandler);
++  if (XGetClassHint (si->dpy, w, &ch))
++    {
++      if (si->prefs.verbose_p)
++          fprintf (stderr,
++                  "%s: window %#lx class: %s\n",
++                  blurb(), w, ch.res_class);
++      is_xscreensaver = strcmp(ch.res_class, "XScreenSaver") == 0;
++      XFree(ch.res_name);
++      XFree(ch.res_class);
++    }
++
++  if (!is_xscreensaver)
++    {
++      if (si->prefs.verbose_p)
++          fprintf (stderr,
++                  "%s: raising windows above %#lx\n",
++                  blurb(), w);
++
++      windows[1] = w;
++
++      for (i = 0; i < si->nscreens; i++)
++        {
++          saver_screen_info *ssi = &si->screens[i];
++          if (ssi->screensaver_window)
++            {
++              windows[0] = ssi->screensaver_window;
++              XRestackWindows (si->dpy, windows, countof(windows));
++            }
++        }
++      XSync (si->dpy, False);
++    }
++  XSetErrorHandler (old_handler);
++}
++
+ 
+ static void
+ reset_watchdog_timer (saver_info *si)
+diff --git a/driver/xscreensaver-gfx.c b/driver/xscreensaver-gfx.c
+index 09315f7f..cd95301b 100644
+--- a/driver/xscreensaver-gfx.c
++++ b/driver/xscreensaver-gfx.c
+@@ -396,7 +396,10 @@ main_loop (saver_info *si, Bool init_p)
+       if (event.x_event.xany.type == ClientMessage)
+         handle_clientmessage (si, &event.x_event);
+       else if (event.x_event.xany.type == MapNotify)
+-        refresh_windows (si);
++        {
++          refresh_windows (si);
++          raise_windows_above(si, event.x_event.xmap.window);
++        }
+ # ifdef HAVE_RANDR
+       else if (si->using_randr_extension &&
+                (event.x_event.type == 
+diff --git a/driver/xscreensaver.h b/driver/xscreensaver.h
+index b89ab87b..d2df1135 100644
+--- a/driver/xscreensaver.h
++++ b/driver/xscreensaver.h
+@@ -54,6 +54,7 @@ extern void blank_screen (saver_info *si);
+ extern void unblank_screen (saver_info *si);
+ extern void resize_screensaver_window (saver_info *si);
+ extern void refresh_windows (saver_info *si);
++extern void raise_windows_above(saver_info *si, Window w);
+ 
+ extern void get_screen_viewport (saver_screen_info *ssi,
+                                  int *x_ret, int *y_ret,
+-- 
+2.37.3
+
