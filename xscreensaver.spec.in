@@ -115,6 +115,10 @@ Patch10:          Qubes-0009-Update-to-4-2-branding.patch
 Patch21:         xscreensaver-6.06-webcollage-default-nonet.patch
 # misc: kill gcc warn_unused_result warnings
 Patch3607:       xscreensaver-5.36-0007-misc-kill-gcc-warn_unused_result-warnings.patch
+# switch_page_cb: backport debian fix for DPMS settings issue (debian bug 1031076)
+Patch4601:       xscreensaver-6.06-0001-switch_page_cb-backport-debian-1031076-for-DPMS-settings.patch
+# distort_reset: restrict radius by xgwa correctly (bug 2174626)
+Patch4602:       xscreensaver-6.06-0002-distort_reset-restrict-radius-by-xgwa-correctly.patch
 # Fedora specific
 # window_init: search parenthesis first for searching year
 Patch10001:     xscreensaver-6.00-0001-screensaver_id-search-parenthesis-first-for-searchin.patch
@@ -408,6 +412,8 @@ find . -name \*.c -exec chmod ugo-x {} \;
 %__cat %PATCH21 | %__git am
 
 #%%__cat %PATCH3607 | %__git am
+%__cat %PATCH4601 | %__git am
+%__cat %PATCH4602 | %__git am
 %__cat %PATCH10001 | %__git am
 
 %__cat %PATCH14001 | %__git am
