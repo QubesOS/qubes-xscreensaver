@@ -3,7 +3,7 @@ From: unman <unman@thirdeyesecurity.org>
 Date: Sun, 28 Feb 2021 14:26:19 +0000
 Subject: [PATCH] Remove Documentation link (since we are offline).
 
-emove ref to jwz in help
+Remove ref to jwz in help
 ---
  driver/demo-Gtk.c           | 2 +-
  driver/xscreensaver-demo.ui | 7 -------
@@ -37,6 +37,26 @@ index a6e4e2e..85aa6e6 100644
                        </object>
                        <packing>
                          <property name="padding">0</property>
+diff --git a/driver/demo.ui b/driver/demo.ui
+index 8860c9d3..d2d30ab5 100644
+--- a/driver/demo.ui
++++ b/driver/demo.ui
+@@ -283,15 +283,6 @@
+                             <signal handler="about_menu_cb" name="activate"/>
+                           </object>
+                         </child>
+-                        <child>
+-                          <object class="GtkImageMenuItem">
+-                            <property name="label" translatable="yes">Documentation...</property>
+-                            <property name="visible">True</property>
+-                            <property name="can-focus">False</property>
+-                            <property name="use-underline">True</property>
+-                            <signal handler="doc_menu_cb" name="activate"/>
+-                          </object>
+-                        </child>
+                       </object>
+                     </child>
+                   </object>
 diff --git a/driver/xscreensaver-command.c b/driver/xscreensaver-command.c
 index 0dab564..37e14c8 100644
 --- a/driver/xscreensaver-command.c
@@ -50,3 +70,23 @@ index 0dab564..37e14c8 100644
  \n";
  
  #define USAGE(A,B) do { \
+diff --git a/driver/demo-Gtk.c b/driver/demo-Gtk.c
+index a84b4207..20fd13fe 100644
+--- a/driver/demo-Gtk.c
++++ b/driver/demo-Gtk.c
+@@ -236,7 +236,6 @@ G_DEFINE_TYPE (XScreenSaverApp, xscreensaver_app, GTK_TYPE_APPLICATION)
+   W(adv_button)			\
+   W(std_button)			\
+   W(cmd_label)			\
+-  W(manual)			\
+   W(visual)			\
+   W(visual_combo)		\
+   W(reset_button)		\
+@@ -4642,7 +4641,6 @@ sensitize_demo_widgets (state *s, Bool sensitive_p)
+     {
+       gtk_widget_set_sensitive (dialog->cmd_label, sensitive_p);
+       gtk_widget_set_sensitive (dialog->cmd_text, sensitive_p);
+-      gtk_widget_set_sensitive (dialog->manual, sensitive_p);
+       gtk_widget_set_sensitive (dialog->visual, sensitive_p);
+       gtk_widget_set_sensitive (dialog->visual_combo, sensitive_p);
+     }
