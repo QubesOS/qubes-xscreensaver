@@ -1,0 +1,37 @@
+From b6aacc5eb73ef0d41bdff9cd62672d4dc7a62e0d Mon Sep 17 00:00:00 2001
+From: XScreenSaver owners <xscreensaver-owner@fedoraproject.org>
+Date: Fri, 1 Sep 2023 17:32:57 +0900
+Subject: [PATCH 2/2] convert_ximage_to_rgba32: avoid integer overflow on left
+ shift
+
+gcc -fsanitize=undefined shows the following undefined behavior:
+
+../../../hacks/glx/grab-ximage.c:213:21: runtime error: left shift of 255 by 24 places cannot be represented in type 'int'
+
+This is because of integral promotion from unsigned char to int, not to unsigned int.
+
+To avoid this error, cast to unsigned long type.
+---
+ hacks/glx/grab-ximage.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/hacks/glx/grab-ximage.c b/hacks/glx/grab-ximage.c
+index defefda..9d3a2d6 100644
+--- a/hacks/glx/grab-ximage.c
++++ b/hacks/glx/grab-ximage.c
+@@ -207,10 +207,10 @@ convert_ximage_to_rgba32 (Screen *screen, XImage *image)
+             sb = spread_map[2][sb];
+           }
+ 
+-        cp = ((sr << crpos) |
++        cp = ((((unsigned long)sr) << crpos) |
+               (sg << cgpos) |
+               (sb << cbpos) |
+-              (0xFF << capos));
++              (0xFFUL << capos));
+ 
+         XPutPixel (to, x, y, cp);
+       }
+-- 
+2.41.0
+

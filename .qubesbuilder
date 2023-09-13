@@ -5,4 +5,4 @@ host:
 source:
   files:
   - url: https://ftp.qubes-os.org/distfiles/xscreensaver-@VERSION@.tar.gz
-    sha256: xscreensaver-@VERSION@.tar.gz.sha256
+    sha512: xscreensaver-@VERSION@.tar.gz.sha512

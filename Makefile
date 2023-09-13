@@ -11,9 +11,9 @@ UNTRUSTED_SUFF := .UNTRUSTED
 FETCH_CMD := wget --no-use-server-timestamps -q -O
 
 SHELL := /bin/bash
-%: %.sha256
+%: %.sha512
 	@$(FETCH_CMD) $@$(UNTRUSTED_SUFF) $(URL)
-	@sha256sum --status -c <(printf "$$(cat $<)  -\n") <$@$(UNTRUSTED_SUFF) || \
+	@sha512sum --status -c <(printf "$$(cat $<)  -\n") <$@$(UNTRUSTED_SUFF) || \
 		{ echo "Wrong SHA256 checksum on $@$(UNTRUSTED_SUFF)!"; exit 1; }
 	@mv $@$(UNTRUSTED_SUFF) $@
 

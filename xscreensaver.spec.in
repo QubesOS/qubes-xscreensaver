@@ -113,12 +113,14 @@ Patch10:          Qubes-0009-Update-to-4-2-branding.patch
 ## Patches which must be discussed with upstream
 # See bug 472061
 Patch21:         xscreensaver-6.06-webcollage-default-nonet.patch
-# misc: kill gcc warn_unused_result warnings
-Patch3607:       xscreensaver-5.36-0007-misc-kill-gcc-warn_unused_result-warnings.patch
-# switch_page_cb: backport debian fix for DPMS settings issue (debian bug 1031076)
-Patch4601:       xscreensaver-6.06-0001-switch_page_cb-backport-debian-1031076-for-DPMS-settings.patch
-# distort_reset: restrict radius by xgwa correctly (bug 2174626)
-Patch4602:       xscreensaver-6.06-0002-distort_reset-restrict-radius-by-xgwa-correctly.patch
+# make_ximage: avoid integer overflow on left shift
+Patch4701:       xscreensaver-6.07-0001-make_ximage-avoid-integer-overflow-on-left-shift.patch
+# convert_ximage_to_rgba32: avoid integer overflow on left shift
+Patch4702:       xscreensaver-6.07-0002-convert_ximage_to_rgba32-avoid-integer-overflow-on-l.patch
+# check header directory for ffmpeg related libraries and add to CFLAGS
+Patch4703:       xscreensaver-6.07-0003-check-header-directory-for-ffmpeg-related-libraries-.patch
+# ffmpeg-out.c: include additional header file
+Patch4704:       xscreensaver-6.07-0004-ffmpeg-out.c-include-additional-header-file.patch
 # Fedora specific
 # window_init: search parenthesis first for searching year
 Patch10001:     xscreensaver-6.00-0001-screensaver_id-search-parenthesis-first-for-searchin.patch
@@ -198,7 +200,7 @@ BuildRequires:   libXt-devel
 #BuildRequires:   libXxf86misc-devel
 BuildRequires:   libXxf86vm-devel
 # XScreenSaver 5.31
-BuildRequires:   libXft-devel
+BuildRequires:   pkgconfig(xft)
 BuildRequires:   pkgconfig(gtk+-3.0) >= 2.22.0
 BuildRequires:   pkgconfig(gmodule-2.0)
 BuildRequires:   pkgconfig(libxml-2.0)
@@ -215,6 +217,14 @@ BuildRequires:   pkgconfig(libcap)
 %if 0%{?support_systemd} >= 1
 BuildRequires:   pkgconfig(libsystemd)
 %endif
+# From xscreensaver 6.07
+%if 0%{?enable_animation}
+BuildRequires:   pkgconfig(libavutil)
+BuildRequires:   pkgconfig(libavcodec)
+BuildRequires:   pkgconfig(libavformat)
+BuildRequires:   pkgconfig(libswscale)
+BuildRequires:   pkgconfig(libswresample)
+%endif
 %if 0%{?fedora}
 BuildRequires:   %{default_text}
 %endif
@@ -222,6 +232,9 @@ BuildRequires:   %{default_text}
 # https://fedoraproject.org/wiki/Changes/Build_Root_Without_Perl
 BuildRequires:    perl-interpreter
 BuildRequires:    perl-generators
+# xscreensaver 6.07 calls check-configs.pl
+BuildRequires:    perl(strict)
+BuildRequires:    perl(diagnostics)
 # For --with-login-manager option
 %if 0%{?fedora} >= 14
 # Use pseudo symlink, not writing BR: gdm
@@ -236,10 +249,16 @@ Requires:        appres
 %endif
 # For switch user wrapper
 Requires:        %{_bindir}/pidof
+# XScreenSaver 6.07: For manual
+# Actually the following is not needed, yelp is still used
+#Recommends:      xterm
 %if 0%{?build_tests} < 1
 # Obsoletes but not Provides
 Obsoletes:       xscreeensaver-tests < %{epoch}:%{version}-%{release}
 %endif
+# https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=1030659
+# XScreenSaver 6.06 xscreensaver-settings now needs xscreensaver-gl-visual
+Requires:        %{name}-gl-base = %{epoch}:%{version}-%{release}
 
 %package extras-base
 Summary:         A base package for screensavers
@@ -263,7 +282,6 @@ Requires:        %{name}-extras-base = %{epoch}:%{version}-%{release}
 
 %package gl-base
 Summary:         A base package for screensavers that require OpenGL
-Requires:        %{name}-base = %{epoch}:%{version}-%{release}
 
 %package gl-extras
 Summary:         An enhanced set of screensavers that require OpenGL
@@ -400,8 +418,8 @@ find . -name \*.c -exec chmod ugo-x {} \;
 %__git commit -m "base" -q
 
 %__cat %PATCH1 | %__git am
-%patch2 -p1
-  %__git commit -m "%PATCH2_desc" -a
+%patch -P 2 -p1
+%__git commit -m "%PATCH2_desc" -a
 %__cat %PATCH3 | %__git am
 %__cat %PATCH6 | %__git am
 %__cat %PATCH7 | %__git am
@@ -411,9 +429,10 @@ find . -name \*.c -exec chmod ugo-x {} \;
 
 %__cat %PATCH21 | %__git am
 
-#%%__cat %PATCH3607 | %__git am
-%__cat %PATCH4601 | %__git am
-%__cat %PATCH4602 | %__git am
+%__cat %PATCH4701 | %__git am
+%__cat %PATCH4702 | %__git am
+%__cat %PATCH4703 | %__git am
+%__cat %PATCH4704 | %__git am
 %__cat %PATCH10001 | %__git am
 
 %__cat %PATCH14001 | %__git am
@@ -471,6 +490,7 @@ for f in \
    driver/XScreenSaver.ad.in \
 %endif
    hacks/glx/sproingies.man \
+   hacks/glx/cubocteversion.man \
    ; do
    iconv -f ISO-8859-1 -t UTF-8 $f > $f.tmp || cp -p $f $f.tmp
    touch -r $f $f.tmp
@@ -541,6 +561,12 @@ done
 sed -i.manentry -e 's@man %%s@man 6x %%s 2>/dev/null || man 1 %%s @' \
    driver/XScreenSaver.ad.in
 %__git commit -m "%PATCH_desc" -a
+
+# XScreenSaver 6.07: use xterm
+sed -i.term \
+   driver/XScreenSaver.ad.in \
+   -e 's|lxterminal|xterm|'
+%__git commit -m "Manual: change terminal to xterm" -a
 
 # Suppress rpmlint warnings.
 # suppress about pam config (although this is 
@@ -725,7 +751,7 @@ popd
 %endif
 
 # Update po
-cp -p %{SOURCE100} po/
+#cp -p %{SOURCE100} po/
 
 %if 0%{?use_clang_analyze} >= 1
 %global __make scan-build  --use-analyzer %_bindir/clang --use-cc %_bindir/clang -v -v -v -o clang-analyze make
@@ -897,7 +923,7 @@ done
 echo "%%defattr(-,root,root,-)" >> $dd/gl-base.files
 
 grep xscreensaver-gl-visual $dd/gl-extras.files >> $dd/gl-base.files
-sed -i -e '/xscreensaver-gl-helper/d' $dd/gl-extras.files
+sed -i -e '/xscreensaver-gl-visual/d' $dd/gl-extras.files
 sed -i -e 's|^\(%{_mandir}.*\)$|\1*|' $dd/gl-base.files
 %endif
 
