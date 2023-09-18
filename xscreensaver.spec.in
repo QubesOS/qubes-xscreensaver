@@ -850,6 +850,7 @@ list_files() {
                -e "s@/[a-z][a-z]*/\.\./@/@"                    \
       | sed    -e 's@\(.*/man/.*\)@%%doc \1\*@'                      \
                -e 's@\(.*/pam\.d/\)@%%config(noreplace) \1@'    \
+               -e 's@\(.*/xscreensaver-auth\)@%%attr(4755,root,root) \1@'    \
       | sort  \
       | uniq
 }
