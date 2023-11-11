@@ -477,11 +477,13 @@ silence_hack(){
    set -x
 }
 
+%global PATCH_desc \
 # Qubes logos
 cp -p %{SOURCE20001} utils/images/logo-50.gif
 cp -p %{SOURCE20002} utils/images/logo-50.xpm
 cp -p %{SOURCE20003} utils/images/logo-180.gif
 cp -p %{SOURCE20004} utils/images/logo-180.xpm
+%__git commit -m "%PATCH_desc" -a
 
 %global PATCH_desc \
 # change some files to UTF-8
