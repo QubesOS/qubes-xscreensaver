@@ -1,0 +1,31 @@
+From d1cd797bf8a68f92ac2dc75158cb180ec388873c Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Marek=20Marczykowski-G=C3=B3recki?=
+ <marmarek@invisiblethingslab.com>
+Date: Sat, 21 Oct 2023 17:45:00 +0200
+Subject: [PATCH] Fix blank window not being blanked when DPMS is active
+
+Prevent X server from internally holding window content - apparently
+some drivers decide to not update it when monitor is off.
+
+This is another iteration on problem detailed in "Clear blank screen on
+monitor power on also when no hack is configured" patch.
+---
+ driver/windows.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/driver/windows.c b/driver/windows.c
+index ce459d89..374fa49e 100644
+--- a/driver/windows.c
++++ b/driver/windows.c
+@@ -189,7 +189,7 @@ initialize_screensaver_window_1 (saver_screen_info *ssi)
+ 		      ButtonPressMask | ButtonReleaseMask |
+ 		      PointerMotionMask);
+ 
+-  attrs.backing_store = Always;
++  attrs.backing_store = NotUseful;
+   attrs.colormap = ssi->cmap;
+   attrs.background_pixel = ssi->black_pixel;
+   attrs.backing_pixel = ssi->black_pixel;
+-- 
+2.41.0
+

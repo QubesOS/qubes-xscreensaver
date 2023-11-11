@@ -135,7 +135,7 @@ Patch13501:      xscreensaver-5.35-0101-XIO-print-C-backtrace-on-error.patch
 
 Patch14001: 0001-Clear-blank-screen-on-monitor-power-on-also-when-no-.patch
 Patch14002: 0002-Bring-xscreensaver-gfx-above-other-applications-when.patch
-Patch14003: 0003-Use-xshm-to-blank-the-screen-even-if-no-gradual-fade.patch
+Patch14003: 0001-Fix-blank-window-not-being-blanked-when-DPMS-is-acti.patch
 
 #
 # Patches end
