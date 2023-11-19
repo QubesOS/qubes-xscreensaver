@@ -20,7 +20,7 @@
 %global use_gcc_trap_on_sanitize 0
 %global use_gcc_analyzer 0
 
-%global enable_animation 1
+%global enable_animation 0
 %undefine extrarel
 
 %global flagrel %{nil}
