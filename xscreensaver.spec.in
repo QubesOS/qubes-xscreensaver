@@ -109,7 +109,7 @@ Patch6:          Qubes-0001-Brand-with-Qubes.patch
 Patch7:          Qubes-0002-Remove-Documentation-link-since-we-are-offline.patch
 Patch8:          Qubes-0007-utils.patch
 Patch9:          Qubes-0008-Remove-jwz-email-address-from-xscreensaver-help.patch
-Patch10:          Qubes-0009-Update-to-4-2-branding.patch
+Patch10:          Qubes-0009-Update-to-4-3-branding.patch
 
 ## Patches already sent to the upsteam
 ## Patches which must be discussed with upstream
