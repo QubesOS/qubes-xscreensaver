@@ -2,6 +2,10 @@ host:
   rpm:
     build:
     - xscreensaver.spec
+vm:
+  rpm:
+    build:
+    - xscreensaver.spec
 source:
   files:
   - url: https://ftp.qubes-os.org/distfiles/xscreensaver-@VERSION@.tar.gz
