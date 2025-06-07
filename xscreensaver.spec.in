@@ -1,6 +1,7 @@
 %define name          xscreensaver
 
-%define mainversion   @VERSION@
+%define mainversion   %(echo @VERSION@ | sed -e 's/\\([0-9]\\+\\.[0-9]\\+\\).*/\\1/')
+%define fullversion   @VERSION@
 #%%define beta_ver      b2
 %undefine beta_ver
 
@@ -69,12 +70,12 @@
 
 Summary:         X screen saver and locker
 Name:            %{name}
-Version:         %{mainversion}
+Version:         %{fullversion}
 Release:         %{?beta_ver:0.}%{fedora_rel}%{?beta_ver:.%beta_ver}%{?dist}%{flagrel}%{?extrarel}
 Epoch:           2
 License:         MIT
 URL:             http://www.jwz.org/xscreensaver/
-Source0:         http://www.jwz.org/xscreensaver/xscreensaver-%{mainversion}%{?beta_ver}.tar.gz
+Source0:         http://www.jwz.org/xscreensaver/xscreensaver-%{fullversion}%{?beta_ver}.tar.gz
 %if %{modular_conf}
 Source10:        update-xscreensaver-hacks
 %endif
@@ -84,6 +85,7 @@ Source12:        xscreensaver-autostart.desktop
 %endif
 # wrapper script for switching user (bug 1878730)
 Source13:        xscreensaver-newlogin-wrapper
+Source20:        barcode-words-blacklist.txt
 
 Source100:       ja.po
 
@@ -119,10 +121,6 @@ Patch21:         xscreensaver-6.06-webcollage-default-nonet.patch
 Patch4701:       xscreensaver-6.07-0001-make_ximage-avoid-integer-overflow-on-left-shift.patch
 # convert_ximage_to_rgba32: avoid integer overflow on left shift
 Patch4702:       xscreensaver-6.07-0002-convert_ximage_to_rgba32-avoid-integer-overflow-on-l.patch
-# check header directory for ffmpeg related libraries and add to CFLAGS
-Patch4703:       xscreensaver-6.07-0003-check-header-directory-for-ffmpeg-related-libraries-.patch
-# ffmpeg-out.c: include additional header file
-Patch4704:       xscreensaver-6.07-0004-ffmpeg-out.c-include-additional-header-file.patch
 # Fedora specific
 # window_init: search parenthesis first for searching year
 Patch10001:     xscreensaver-6.00-0001-screensaver_id-search-parenthesis-first-for-searchin.patch
@@ -174,6 +172,7 @@ BuildRequires:   gettext
 BuildRequires:   libtool
 BuildRequires:   pam-devel > %{pam_ver}
 BuildRequires:   sed
+BuildRequires:   libxcrypt-devel
 # Use pseudo symlink
 # BuildRequires:   xdg-utils
 BuildRequires:   xorg-x11-proto-devel
@@ -429,12 +428,15 @@ find . -name \*.c -exec chmod ugo-x {} \;
 %__cat %PATCH9 | %__git am
 %__cat %PATCH10 | %__git am
 
+%__cat %SOURCE20 | while read f
+do
+    sed -i hacks/barcode.c -e "\@\"$f\"@s@^.*\$@/**/@"
+done
+%__git commit -m "barcode: sanitize the names of modes" -a
 %__cat %PATCH21 | %__git am
 
 %__cat %PATCH4701 | %__git am
 %__cat %PATCH4702 | %__git am
-%__cat %PATCH4703 | %__git am
-%__cat %PATCH4704 | %__git am
 %__cat %PATCH10001 | %__git am
 
 %__cat %PATCH14001 | %__git am
@@ -526,9 +528,13 @@ change_option driver/XScreenSaver.ad.in \
 # Disable the following hacks by default \
 # (disable, not remove)
 silence_hack driver/XScreenSaver.ad.in \
-   bsod flag \
-   peepers \
+   bsod \
+   covid19 \
+   flag \
    headroom \
+   peepers \
+   skulloop \
+   skytentacles \
    %{nil}
 %__git commit -m "%PATCH_desc" -a
 
